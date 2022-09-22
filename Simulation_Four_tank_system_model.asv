@@ -117,12 +117,33 @@ if want_step == 1
             t_ini = (kk-1)*deltaT;
             t_fin = kk*deltaT;
             %Store time-stamps
-            T(kk,:,i) = t_ini;
-            [T2,X2] = ode15s(@FourTankSystem,[t_ini t_fin],X(kk,:,i)',[],u,p,d);
-            X(kk+1,:,i) = X2(end,:);
+            time(1,kk,) = t_ini;
+            [T2,X2] = ode15s(@FourTankSystem,[t_ini t_fin],x2(kk,:)',[],u,p,d);
+            x(kk+1,:,i) = X2(end,:);
         end
-        T(kk+1,:,i) = t_fin;
+        time(kk+1) = t_fin;
+
     end
+    time(kk+1) = t_fin;
+    X = []; T = [];
+    X(:,:,1) = x;
+    T(:,:,1) = time';
+
+    % For loop to calculate output for different steps
+    [T,X] = ode15s(@FourTankSystem,[t0 t_ss],x0,[],u,p,d);
+    for i=1:length(steps)
+        % Step in actuator
+    %         u = [steps(i)*step_bin(1)*F1 steps(i)*step_bin(2)*F2];
+    %         d = [steps(i)*step_bin(3)*F3; steps(i)*step_bin(4)*F4];
+        x0 = X(end,:);
+        [T2(:,:,i),X2(:,:,i)] = ode15s(@FourTankSystem,[t_ss tf*2],x0,[],u,p,d);
+    end
+
+    for i=1:length(steps)
+        X_new(:,:,i) = [X; X2(:,:,i)];
+        T_new(:,:,i) = [T; T2(:,:,1)];
+    end
+    T = T_new; X = X_new;
 end
 
 % help variables
