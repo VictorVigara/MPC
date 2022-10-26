@@ -1,23 +1,25 @@
 clc; clear all;
 %% Simulation scenario
-t0 = 0.0; % [s] Initial time
-tf = 20*60; % [s] Final time
-deltaT = 60;
-m10 = 0.0; % [g] Liquid mass in tank 1 at time t0
-m20 = 0.0; % [g] Liquid mass in tank 2 at time t0
-m30 = 0.0; % [g] Liquid mass in tank 3 at time t0
-m40 = 0.0; % [g] Liquid mass in tank 4 at time t0
-F1 = 300; % [cm3/s] Flow rate from pump 1
-F2 = 300; % [cm3/s] Flow rate from pump 2
-F3 = 250;
-F4 = 250;
+t0 = 0.0;           % [s] Initial time
+tf = 20*60;         % [s] Final time
+deltaT = 10;        % [s] Sample time 
+t = [t0:deltaT:tf]; % [s] sample instants
+N = length(t);
+m10 = 0.0;          % [g] Liquid mass in tank 1 at time t0
+m20 = 0.0;          % [g] Liquid mass in tank 2 at time t0
+m30 = 0.0;          % [g] Liquid mass in tank 3 at time t0
+m40 = 0.0;          % [g] Liquid mass in tank 4 at time t0
+F1 = 300;           % [cm3/s] Flow rate from pump 1
+F2 = 300;           % [cm3/s] Flow rate from pump 2
+F3 = 0;           % [cm3/s] Flow rate from pump 3
+F4 = 0;           % [cm3/s] Flow rate from pump 4
 x0 = [m10; m20; m30; m40];
 u = [F1; F2];
 d = [F3; F4];
-step_bin = [1; 1; 1; 1]; %Step for every F
-steps = [1.1; 1.25; 1.5];
-want_step = 1;
-Ts = 4; % Sample time for discretize the system 
+step_bin = [1; 1; 1; 1];    % Binary selection for steps for every F
+steps = [1.1; 1.25; 1.5];   % Step values for each F
+want_step = 0;              % Select if step us wanted
+Ts = 4;                     % Sample time for discretize the system 
 
 %% Parameters
 a1 = 1.2272; %[cm2] Area of outlet pipe 1
@@ -78,6 +80,20 @@ Cz = C(1:2,:);
 % p = eig(A); 
 % z = eig(M,N);
 
+% ------------------------------------------------------------------------
+% Stochastic simulation 
+% ------------------------------------------------------------------------
+
+% Process Noise
+Q = [20^2 0;0 40^2];
+Lq = chol(Q,'lower');
+w = Lq*randn(2,N);
+
+% Measurement Noise
+R = eye(4);
+Lr = chol(R,'lower');
+v = Lr*randn(4,N);
+
 %% Simulate the system
 if want_step == 0
     steps = 0;
@@ -86,16 +102,22 @@ end
 % Solve the system of differential equations
 iter_sim = round(tf/deltaT)
 x = zeros(1,4);
+
 %Discrete simulation without steps
 for kk=1:iter_sim
+    y(:,kk) = FourTankSystemSensor(x(kk,:),p); % Get height from mass
+    z(:,kk) = FourTankSystemSensor(x(kk,:),p); % Get height from mass
+    
     %Define simulation time
     t_ini = (kk-1)*deltaT;
     t_fin = kk*deltaT;
+
     %Store time-stamps
     time(kk) = t_ini;
-    [T,X] = ode15s(@FourTankSystem,[t_ini t_fin],x(kk,:)',[],u,p,d);
+    [T,X] = ode15s(@FourTankSystem,[t_ini t_fin],x(kk,:)',[],u + w(:,kk),p,d);
     x(kk+1,:) = X(end,:);
 end
+
 time(kk+1) = t_fin;
 X = []; T = [];
 X(:,:,1) = x;
@@ -121,6 +143,7 @@ if want_step == 1
             [T2,X2] = ode15s(@FourTankSystem,[t_ini t_fin],X(kk,:,i)',[],u,p,d);
             X(kk+1,:,i) = X2(end,:);
         end
+
         T(kk+1,:,i) = t_fin;
     end
 end
@@ -129,6 +152,7 @@ end
 [nT,nX] = size(X);
 a = p(1:4,1)';
 A = p(5:8,1)';
+
 % Compute the measured variables
 H = zeros(nT,4,length(steps));
 for j=1:length(steps)
@@ -136,6 +160,7 @@ for j=1:length(steps)
         H(i,:,j) = FourTankSystemSensor(X(i,:,j),p); % Get height from mass
     end
 end
+
 % Compute the flows out of each tank
 Qout = zeros(nT,4,length(steps));
 for j=1:length(steps)
@@ -144,6 +169,9 @@ for j=1:length(steps)
     end
 end
 
+%% PLOTS ------------------------------------------------------------------
+
+% Mass plots
 max_m = max(max(max(X)))/1000;
 
 for i=1:length(steps)
