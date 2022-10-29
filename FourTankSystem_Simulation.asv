@@ -1,0 +1,48 @@
+clear all; clc; clear figures; close all;
+%% Loading simulation scenario and parameters
+FourTankSystem_SetupVariables; 
+mass_solution = {}
+sensor_data = {};
+
+%% ------------------------------------------------------------------------
+% Compute the solution / Simulate Ode15s
+% -------------------------------------------------------------------------
+
+% Solve the system of differential equations
+[T,X] = ode15s(@FourTankSystem,[t0 tf],x0,[],u,p,d);
+
+% Save mass data to plot it
+mass_solution = data2Plot(T,X,"ode15s",mass_solution)
+
+%% ------------------------------------------------------------------------
+% Discret-Time Simulation
+%-------------------------------------------------------------------------
+
+% Simulate the system
+[X_discret, T_discret, y_discret, z_discret] = discreteSimulation(tf, deltaT, u, p, d);
+plotHeight(T_discret,y_discret,"Discrete simulation - Sensor", 0, steps)
+
+% Save mass data to plot it
+mass_solution = data2Plot(T_discret,X_discret,"Discrete",mass_solution);
+% Save sensor data
+sensor_data = data2Plot(T_discret,y_discret,"Discrete",sensor_data);
+
+%% ------------------------------------------------------------------------
+% Stochastic simulation
+% -------------------------------------------------------------------------
+
+% Simulate the system
+[X_stoch, T_stoch, y_stoch, z_stoch] = stochasticSimulation(tf, deltaT, u, p, d, v, w)
+plotHeight(T_stoch, y_stoch, "Stochastic simulation - Sensor", 1, steps)
+
+% Save mass data to plot it
+mass_solution = data2Plot(T_stoch,X_stoch,"Stochastic",mass_solution)
+% Save sensor data
+sensor_data = data2Plot(T_stoch, y_stoch, "Stochastic", sensor_data)
+
+%% ------------------------------------------------------------------------
+% Plots
+% -------------------------------------------------------------------------
+
+plotMass(mass_solution, "Mass (Kg)", "Mass vs Time");
+plotMass(sensor_data, "Height (cm)", "Height sensor")

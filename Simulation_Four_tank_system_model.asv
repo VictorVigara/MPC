@@ -1,5 +1,5 @@
 clc; clear all;
-%% ------------------------------------------------------------------------
+% -------------------------------------------------------------------------
 % Simulation scenario
 % -------------------------------------------------------------------------
 
@@ -20,23 +20,18 @@ x0 = [m10; m20; m30; m40];
 % Flow rates pumps
 F1 = 300;           % [cm3/s] Flow rate from pump 1
 F2 = 300;           % [cm3/s] Flow rate from pump 2
-F3 = 0;             % [cm3/s] Flow rate from pump 3
-F4 = 0;             % [cm3/s] Flow rate from pump 4
+F3 = 0;           % [cm3/s] Flow rate from pump 3
+F4 = 0;           % [cm3/s] Flow rate from pump 4
 u = [F1; F2];
 d = [F3; F4];
 
 % Set-up steps in each pump flow rate
-want_step = 0;              % Select if step us wanted
 step_bin = [1; 1; 1; 1];    % Binary selection for steps for every F
 steps = [1.1; 1.25; 1.5];   % Step values for each F
+want_step = 0;              % Select if step us wanted
 Ts = 4;                     % Sample time for discretize the system 
-if want_step == 0
-    steps = 0;
-end
 
-%% ------------------------------------------------------------------------
-% Parameters
-% -------------------------------------------------------------------------
+%% Parameters
 a1 = 1.2272; %[cm2] Area of outlet pipe 1
 a2 = 1.2272; %[cm2] Area of outlet pipe 2
 a3 = 1.2272; %[cm2] Area of outlet pipe 3
@@ -54,11 +49,7 @@ g = 981; %[cm/s2] The acceleration of gravity
 rho = 1.00; %[g/cm3] Density of water
 p = [a1; a2; a3; a4; A1; A2; A3; A4; gamma1; gamma2; g; rho];
 
-%% ------------------------------------------------------------------------
-% Get steady-state point
-% -------------------------------------------------------------------------
-
-% Pumps flow rate for steady state calculation 
+%% Get steady-state point
 F1_ss = 300;
 F2_ss = 300;
 F3_ss = 250;
@@ -114,6 +105,9 @@ Lr = chol(R,'lower');
 v = Lr*randn(4,N);
 
 %% Simulate the system
+if want_step == 0
+    steps = 0;
+end
 
 % Solve the system of differential equations
 iter_sim = round(tf/deltaT)
