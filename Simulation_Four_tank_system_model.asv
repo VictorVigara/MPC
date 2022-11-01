@@ -1,5 +1,5 @@
 clc; clear all;
-%% ------------------------------------------------------------------------
+% -------------------------------------------------------------------------
 % Simulation scenario
 % -------------------------------------------------------------------------
 
@@ -20,23 +20,18 @@ x0 = [m10; m20; m30; m40];
 % Flow rates pumps
 F1 = 300;           % [cm3/s] Flow rate from pump 1
 F2 = 300;           % [cm3/s] Flow rate from pump 2
-F3 = 0;             % [cm3/s] Flow rate from pump 3
-F4 = 0;             % [cm3/s] Flow rate from pump 4
+F3 = 0;           % [cm3/s] Flow rate from pump 3
+F4 = 0;           % [cm3/s] Flow rate from pump 4
 u = [F1; F2];
 d = [F3; F4];
 
 % Set-up steps in each pump flow rate
-want_step = 0;              % Select if step us wanted
 step_bin = [1; 1; 1; 1];    % Binary selection for steps for every F
 steps = [1.1; 1.25; 1.5];   % Step values for each F
+want_step = 0;              % Select if step us wanted
 Ts = 4;                     % Sample time for discretize the system 
-if want_step == 0
-    steps = 0;
-end
 
-%% ------------------------------------------------------------------------
-% Parameters
-% -------------------------------------------------------------------------
+%% Parameters
 a1 = 1.2272; %[cm2] Area of outlet pipe 1
 a2 = 1.2272; %[cm2] Area of outlet pipe 2
 a3 = 1.2272; %[cm2] Area of outlet pipe 3
@@ -54,11 +49,7 @@ g = 981; %[cm/s2] The acceleration of gravity
 rho = 1.00; %[g/cm3] Density of water
 p = [a1; a2; a3; a4; A1; A2; A3; A4; gamma1; gamma2; g; rho];
 
-%% ------------------------------------------------------------------------
-% Get steady-state point
-% -------------------------------------------------------------------------
-
-% Pumps flow rate for steady state calculation 
+%% Get steady-state point
 F1_ss = 300;
 F2_ss = 300;
 F3_ss = 250;
@@ -114,6 +105,9 @@ Lr = chol(R,'lower');
 v = Lr*randn(4,N);
 
 %% Simulate the system
+if want_step == 0
+    steps = 0;
+end
 
 % Solve the system of differential equations
 iter_sim = round(tf/deltaT)
@@ -229,5 +223,52 @@ for i=1:length(steps)
     grid on
 
     hold on
+
+    % F_all = [F1; F2; F3; F4];
+    % S = zeros(length(H),4,length(F_all));
+    % 
+    % for i=1:4
+    %     for k=1:length(F_all)
+    %         for j=1:length(H)
+    %             S(j,i,k) = (H(j,i) - ys(i))/abs(F_all(k) - step(k)*F_all(k));
+    %         end
+    %     end
+    % end
+    % 
+    % 
+    
+    % 
+    % figure(2)
+    % subplot(2,2,1)
+    % plot(T/60,X(:,3)/1000)
+    % xlabel("Time (min)")
+    % ylabel("Height (m)")
+    % title("Tank 3")
+    % ylim([0 max_m])
+    % grid on
+    % 
+    % subplot(2,2,2)
+    % plot(T/60,X(:,4)/1000)
+    % xlabel("Time (min)")
+    % ylabel("Height (m)")
+    % title("Tank 4")
+    % ylim([0 max_m])
+    % grid on
+    % 
+    % subplot(2,2,3)
+    % plot(T/60,X(:,1)/1000)
+    % xlabel("Time (min)")
+    % ylabel("Height (m)")
+    % title("Tank 1")
+    % ylim([0 max_m])
+    % grid on
+    % 
+    % subplot(2,2,4)
+    % plot(T/60,X(:,2)/1000)
+    % xlabel("Time (min)")
+    % ylabel("Height (m)")
+    % title("Tank 2")
+    % ylim([0 max_m])
+    % grid on
 end
 

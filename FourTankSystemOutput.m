@@ -1,4 +1,4 @@
-function ys = FourTankSystemSensor(xs,p)
+function ys = FourTankSystemOutput(xs,p)
     % Unpack states, MVs, and parameters
     m = xs; 
     A = p(5:8,1)'; % Tank cross sectional areas [cm2]
