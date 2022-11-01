@@ -229,52 +229,5 @@ for i=1:length(steps)
     grid on
 
     hold on
-
-    % F_all = [F1; F2; F3; F4];
-    % S = zeros(length(H),4,length(F_all));
-    % 
-    % for i=1:4
-    %     for k=1:length(F_all)
-    %         for j=1:length(H)
-    %             S(j,i,k) = (H(j,i) - ys(i))/abs(F_all(k) - step(k)*F_all(k));
-    %         end
-    %     end
-    % end
-    % 
-    % 
-    
-    % 
-    % figure(2)
-    % subplot(2,2,1)
-    % plot(T/60,X(:,3)/1000)
-    % xlabel("Time (min)")
-    % ylabel("Height (m)")
-    % title("Tank 3")
-    % ylim([0 max_m])
-    % grid on
-    % 
-    % subplot(2,2,2)
-    % plot(T/60,X(:,4)/1000)
-    % xlabel("Time (min)")
-    % ylabel("Height (m)")
-    % title("Tank 4")
-    % ylim([0 max_m])
-    % grid on
-    % 
-    % subplot(2,2,3)
-    % plot(T/60,X(:,1)/1000)
-    % xlabel("Time (min)")
-    % ylabel("Height (m)")
-    % title("Tank 1")
-    % ylim([0 max_m])
-    % grid on
-    % 
-    % subplot(2,2,4)
-    % plot(T/60,X(:,2)/1000)
-    % xlabel("Time (min)")
-    % ylabel("Height (m)")
-    % title("Tank 2")
-    % ylim([0 max_m])
-    % grid on
 end
 

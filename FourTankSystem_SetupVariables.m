@@ -17,6 +17,9 @@ m30 = 0.0;          % [g] Liquid mass in tank 3 at time t0
 m40 = 0.0;          % [g] Liquid mass in tank 4 at time t0
 x0 = [m10; m20; m30; m40];
 
+% Steady-state
+ss_threshold = 0.05;
+
 % Flow rates pumps
 F1 = 300;           % [cm3/s] Flow rate from pump 1
 F2 = 300;           % [cm3/s] Flow rate from pump 2
@@ -26,14 +29,14 @@ u = [F1; F2];
 d = [F3; F4];
 
 % Pumps flow rate for steady state calculation 
-F1_ss = 300;
-F2_ss = 300;
-F3_ss = 250;
-F4_ss = 250;
+F1_ss = 250;
+F2_ss = 325;
+F3_ss = 0;
+F4_ss = 0;
 
 % Set-up steps in each pump flow rate
-want_step = 0;              % Select if step us wanted
-step_bin = [1; 1; 1; 1];    % Binary selection for steps for every F
+want_step = 1;              % Select if step us wanted
+step_bin = [1; 1; 0; 0];    % Binary selection for steps for every F
 steps = [1.1; 1.25; 1.5];   % Step values for each F
 Ts = 4;                     % Sample time for discretize the system 
 if want_step == 0
@@ -44,11 +47,11 @@ end
 % Process Noise
 Q = [20^2 0;0 40^2];
 Lq = chol(Q,'lower');
-w = Lq*randn(2,N);
+w = Lq*randn(2,2*N);
 % Measurement Noise
 R = eye(4);
 Lr = chol(R,'lower');
-v = Lr*randn(4,N);
+v = Lr*randn(4,2*N);
 
 %% ------------------------------------------------------------------------
 % Parameters
