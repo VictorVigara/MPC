@@ -7,6 +7,7 @@ FourTankSystem_SetupVariables;
 mass_data = {};
 sensor_data = {};
 qout_output_data = {};
+mass_discrete_steps_output = {};
 
 %% ------------------------------------------------------------------------
 % Steady State calculation
@@ -23,19 +24,27 @@ qout_output_data = {};
 y = FourTankSystemSensor(X,p);
 
 % Save data to plot it
-% mass_data = data2Plot(T,X,"ode15s",mass_data);
-% sensor_data = data2Plot(T,y,"ode15s",sensor_data);
+mass_data = data2Plot(T,X,"ode15s",mass_data);
+sensor_data = data2Plot(T,y,"ode15s",sensor_data);
 
 %% ------------------------------------------------------------------------
 % Discret-Time Simulation
 %-------------------------------------------------------------------------
 
-% Simulate the system
-[X_discret, T_discret, y_discret, z_discret] = discreteSimulation(tf, deltaT, u, p, d);
+% Simulate stochastic system without error -> v = 0 and w = 0
+[X_discret, T_discret, y_discret, z_discret] = stochasticSimulation(tf, deltaT, u, p, d, 0, 0,...
+                                               0, steps, step_bin);
+[X_discret_steps, T_discret_steps, y_discret_steps, z_discret_steps] = stochasticSimulation(tf, deltaT, u, p, d, 0, 0,...
+                                               1, steps, step_bin);
+height_discret = FourTankSystemSensor(X_discret,p); % Get tank height from mass output
+qout_discret = height2flow(height_discret,p);       % Get out flow from height output
 
 % Save data to plot it
-% mass_data = data2Plot(T_discret,X_discret,"Discrete",mass_data);
-% sensor_data = data2Plot(T_discret,y_discret,"Discrete",sensor_data);
+mass_data = data2Plot(T_discret,X_discret,"Discrete",mass_data);
+sensor_data = data2Plot(T_discret,y_discret,"Discrete",sensor_data);
+qout_output_data = data2Plot(T_discret, qout_discret, "Discrete", qout_output_data);
+mass_discrete_steps_output = data2Plot(T_discret_steps,X_discret_steps,"Discrete",mass_discrete_steps_output);
+
 
 %% ------------------------------------------------------------------------
 % Stochastic simulation
@@ -43,7 +52,7 @@ y = FourTankSystemSensor(X,p);
 
 % Simulate the system
 [X_stoch, T_stoch, y_stoch, z_stoch] = stochasticSimulation(tf, deltaT, u, p, d, v, w,...
-                                       want_step, steps, step_bin);
+                                       0, steps, step_bin);
 
 height_stoch = FourTankSystemSensor(X_stoch,p); % Get tank height from mass output
 qout_stoch = height2flow(height_stoch,p);       % Get out flow from height output
@@ -60,3 +69,5 @@ qout_output_data = data2Plot(T_stoch, qout_stoch, "Stochastic", qout_output_data
 plotData(mass_data, "mass", "Mass output");
 plotData(sensor_data, "height", "Height sensor");
 plotData(qout_output_data,"flow", "Output flow");
+
+plotSteps(mass_discrete_steps_output, "mass", steps);

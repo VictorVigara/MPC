@@ -1,11 +1,25 @@
 function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
                                                  want_step, steps, step_bin)    
     % Solve the system of differential equations
-    iter_sim = round(tf/deltaT)
+    iter_sim = round(tf/deltaT);
     Xk = zeros(1,4);
     Tk = 0;
     yk = zeros(1,4);
     zk = zeros(1,4);
+
+    % If discrete simulation is wanted, adecuate v and w inputs
+    if v == 0
+        v = zeros(4,2*iter_sim);
+    end
+
+    if w == 0
+        w = zeros(2,2*iter_sim);
+    end
+
+    % If not steps wanted, set steps to zero
+    if want_step == 0
+        steps = 0;
+    end
 
     % Loop discrete simulation
     for i=1:iter_sim
