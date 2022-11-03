@@ -9,6 +9,7 @@ tf = 20*60;         % [s] Final time
 deltaT = 10;        % [s] Sample time 
 t = [t0:deltaT:tf]; % [s] sample instants
 N = length(t);
+Ts = 10;                     % Sample time for discretize the system 
 
 % Initial mass
 m10 = 0.0;          % [g] Liquid mass in tank 1 at time t0
@@ -29,8 +30,8 @@ u = [F1; F2];
 d = [F3; F4];
 
 % Pumps flow rate for steady state calculation 
-F1_ss = 250;
-F2_ss = 325;
+F1_ss = 300;
+F2_ss = 300;
 F3_ss = 0;
 F4_ss = 0;
 
@@ -38,7 +39,6 @@ F4_ss = 0;
 want_step = 1;              % Select if step us wanted
 step_bin = [1; 1; 0; 0];    % Binary selection for steps for every F
 steps = [1.1; 1.25; 1.5];   % Step values for each F
-Ts = 4;                     % Sample time for discretize the system 
 if want_step == 0
     steps = 0;
 end
@@ -67,7 +67,7 @@ A3 = 380.1327; %[cm2] Cross sectional area of tank 3
 A4 = 380.1327; %[cm2] Cross sectional area of tank 4
 At = [A1; A2; A3; A4];
 gamma1 = 0.45; % Flow distribution constant. Valve 1
-gamma2 = 0.40; % Flow distribution constant. Valve 2
+gamma2 = 0.4; % Flow distribution constant. Valve 2
 gamm = [gamma1; gamma2];
 g = 981; %[cm/s2] The acceleration of gravity
 rho = 1.00; %[g/cm3] Density of water
