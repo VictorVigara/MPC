@@ -59,8 +59,32 @@ function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
 
         for i=1:length(steps)
             % If steps are applied multiply u and d
-            u_step = [steps(i)*step_bin(1)*u(1) steps(i)*step_bin(2)*u(2)];
-            d_step = [steps(i)*step_bin(3)*d(1); steps(i)*step_bin(4)*d(2)];
+            if step_bin(1) == 0
+                u_step(1,1) = u(1);
+            else 
+                u_step(1,1) = steps(i)*step_bin(1)*u(1);
+            end
+
+            if step_bin(2) == 0
+                u_step(1,2) = u(2);
+            else
+                u_step(1,2) = steps(i)*step_bin(2)*u(2);
+            end
+
+            if step_bin(3) == 0
+                d_step(1,1) = d(1);
+            else
+                d_step(1,1) = steps(i)*step_bin(3)*d(1);
+            end
+
+            if step_bin(4) == 0
+                d_step(2,1) = d(2);
+            else
+                d_step(2,1) = steps(i)*step_bin(4)*d(2);
+            end
+
+%             u_step = [steps(i)*step_bin(1)*u(1) steps(i)*step_bin(2)*u(2)];
+%             d_step = [steps(i)*step_bin(3)*d(1); steps(i)*step_bin(4)*d(2)];
             
             for j=iter_sim:2*iter_sim
                 %Define simulation time

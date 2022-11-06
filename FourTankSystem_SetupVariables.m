@@ -5,9 +5,9 @@ clc; clear all;
 
 % Simulation time
 t0 = 0.0;           % [s] Initial time
-tf = 20*60;         % [s] Final time
+Tf = 20*60;         % [s] Final time
 deltaT = 10;        % [s] Sample time 
-t = [t0:deltaT:tf]; % [s] sample instants
+t = [t0:deltaT:Tf]; % [s] sample instants
 N = length(t);
 Ts = 10;                     % Sample time for discretize the system 
 
@@ -24,8 +24,8 @@ ss_threshold = 0.05;
 % Flow rates pumps
 F1 = 300;           % [cm3/s] Flow rate from pump 1
 F2 = 300;           % [cm3/s] Flow rate from pump 2
-F3 = 0;             % [cm3/s] Flow rate from pump 3
-F4 = 0;             % [cm3/s] Flow rate from pump 4
+F3 = 300;             % [cm3/s] Flow rate from pump 3
+F4 = 300;             % [cm3/s] Flow rate from pump 4
 u = [F1; F2];
 d = [F3; F4];
 

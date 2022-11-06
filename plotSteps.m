@@ -54,7 +54,7 @@ function plotSteps(cell_data, plot_type, steps)
             xlabel("Time (min)")
             ylabel(y_label)
             title("Tank 3")
-            ylim([0 max_m])
+            ylim([0 max(X3)])
             xlim([0 x_lim])
             grid on
             hold on
@@ -65,7 +65,7 @@ function plotSteps(cell_data, plot_type, steps)
             xlabel("Time (min)")
             ylabel(y_label)
             title("Tank 4")
-            ylim([0 max_m])
+            ylim([0 max(X4)])
             xlim([0 x_lim])
             grid on
             hold on
@@ -76,7 +76,7 @@ function plotSteps(cell_data, plot_type, steps)
             xlabel("Time (min)")
             ylabel(y_label)
             title("Tank 1")
-            ylim([0 max_m])
+            ylim([0 max(X1)])
             xlim([0 x_lim])
             grid on
             hold on        
@@ -87,7 +87,7 @@ function plotSteps(cell_data, plot_type, steps)
             xlabel("Time (min)")
             ylabel(y_label)
             title("Tank 2")
-            ylim([0 max_m])
+            ylim([0 max(X2)])
             xlim([0 x_lim])
             grid on
         

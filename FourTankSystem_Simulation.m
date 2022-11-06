@@ -7,16 +7,13 @@ FourTankSystem_SetupVariables;
 % -Output will be called to variables from differential equation solutions
 % -Data will be called to variables from measurements
 % -If steps wanted to be saved, step will be used in the variable name
-mass_output = {};
-sensor_data = {};
-qout_output = {};
-mass_discrete_steps_output = {};
+mass_discrete_steps = {};
 
 %% ------------------------------------------------------------------------
 % Steady State calculation
 % -------------------------------------------------------------------------
 % Get index and time step in which first tank achieves steady-state
-[X_ss, y_ss, z_ss] = getSteadyState(F1_ss, F2_ss, F3_ss, F4_ss, p, u, d, x0, t0, tf);
+[X_ss, y_ss, z_ss] = getSteadyState(F1_ss, F2_ss, F3_ss, F4_ss, p, u, d, x0, t0, Tf);
 
 %% ------------------------------------------------------------------------
 % Linearization 
@@ -29,8 +26,8 @@ A = [-T(1)    0     T(3)     0  ; ...
        0      0      0     -T(4)];
 
 B = [ rho*gamma1            0          ; ...
-      0                 rho*gamma2    ; ...
-      0                 rho*(1-gamma2); ...
+      0                 rho*gamma2     ; ...
+      0                 rho*(1-gamma2) ; ...
       rho*(1-gamma1)        0          ];
 
 C = diag(1./(At*rho));
@@ -43,16 +40,25 @@ Cz = C(1:2,:);
 [Abar, Bbar] = c2dzoh(A, B, Ts);
 
 %% ------------------------------------------------------------------------
+% Transfer function of the linear model
+% -------------------------------------------------------------------------
+% Obtain transfer functions from linearized differential equations
+% [G11_lin ,G12_lin ,G21_lin ,G22_lin] = LDE2tf(A,B,C); 
+% M = [A B; C zeros(2,2)];
+% N = [];
+% poles_lin = eig(A);
+% zeros_lin = eig(M,N);
+
+%% ------------------------------------------------------------------------
 % Compute the solution / Simulate Ode15s
 % -------------------------------------------------------------------------
 
 % Solve the system of differential equations
-[T,X] = ode15s(@FourTankSystem,[t0 tf],x0,[],u,p,d);
+[T,X] = ode15s(@FourTankSystem,[t0 Tf],x0,[],u,p,d);
 y = FourTankSystemSensor(X,p);
 
 % Save data to plot it
-mass_output = data2Plot(T,X,"ode15s",mass_output);
-sensor_data = data2Plot(T,y,"ode15s",sensor_data);
+
 
 %% ------------------------------------------------------------------------
 % Discret-Time Simulation
@@ -60,20 +66,17 @@ sensor_data = data2Plot(T,y,"ode15s",sensor_data);
 
 % Simulate stochastic system without error -> v = 0 and w = 0
 [X_discret, T_discret, y_discret, z_discret] = ...
-    stochasticSimulation(tf, deltaT, u, p, d, 0, 0, 0, steps, step_bin);
+    stochasticSimulation(Tf, deltaT, u, p, d, 0, 0, 0, steps, step_bin);
 
 % Simulate stochastic system without error with steps -> v = 0 and w = 0
 [X_discret_steps, T_discret_steps, y_discret_steps, z_discret_steps] = ...
-    stochasticSimulation(tf, deltaT, u, p, d, 0, 0, 1, steps, step_bin);
+    stochasticSimulation(Tf, deltaT, u, p, d, 0, 0, 1, steps, step_bin);
 
 height_discret = FourTankSystemSensor(X_discret,p); % Get tank height from mass output
 qout_discret = height2flow(height_discret,p);       % Get out flow from height output
 
 % Save data to plot it
-mass_output = data2Plot(T_discret,X_discret,"Discrete",mass_output);
-sensor_data = data2Plot(T_discret,y_discret,"Discrete",sensor_data);
-qout_output = data2Plot(T_discret, qout_discret, "Discrete", qout_output);
-mass_discrete_steps_output = data2Plot(T_discret_steps,X_discret_steps,"Discrete",mass_discrete_steps_output);
+mass_discrete_steps = data2Plot(T_discret_steps,X_discret_steps,"Discrete",mass_discrete_steps);
 
 
 %% ------------------------------------------------------------------------
@@ -81,23 +84,17 @@ mass_discrete_steps_output = data2Plot(T_discret_steps,X_discret_steps,"Discrete
 % -------------------------------------------------------------------------
 
 % Simulate the system
-[X_stoch, T_stoch, y_stoch, z_stoch] = stochasticSimulation(tf, deltaT, u, p, d, v, w,...
+[X_stoch, T_stoch, y_stoch, z_stoch] = stochasticSimulation(Tf, deltaT, u, p, d, v, w,...
                                        0, steps, step_bin);
 
 height_stoch = FourTankSystemSensor(X_stoch,p); % Get tank height from mass output
 qout_stoch = height2flow(height_stoch,p);       % Get out flow from height output
 
 % Save data to plot it
-mass_output = data2Plot(T_stoch,X_stoch,"Stochastic",mass_output);
-sensor_data = data2Plot(T_stoch, y_stoch, "Stochastic", sensor_data);
-qout_output = data2Plot(T_stoch, qout_stoch, "Stochastic", qout_output);
+
 
 %% ------------------------------------------------------------------------
 % Plots
 % -------------------------------------------------------------------------
 
-plotData(mass_output, "mass", "Mass output");
-plotData(sensor_data, "height", "Height sensor");
-plotData(qout_output,"flow", "Output flow");
-
-plotSteps(mass_discrete_steps_output, "mass", steps);
+plotSteps(mass_discrete_steps, "mass", steps);

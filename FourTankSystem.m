@@ -28,7 +28,7 @@ function xdot = FourTankSystem(t,x,u,p,d)
     xdot = zeros(4,1);
     xdot(1,1) = rho*(qin(1,1)+qout(3,1)-qout(1,1)); % Mass balance Tank 1
     xdot(2,1) = rho*(qin(2,1)+qout(4,1)-qout(2,1)); % Mass balance Tank 2
-    xdot(3,1) = rho*(qin(3,1)-qout(3,1)) + rho*F3; % Mass balance Tank 3
-    xdot(4,1) = rho*(qin(4,1)-qout(4,1)) + rho*F4; % Mass balance Tank 4
+    xdot(3,1) = rho*(qin(3,1)-qout(3,1)+F3); % Mass balance Tank 3
+    xdot(4,1) = rho*(qin(4,1)-qout(4,1)+F4); % Mass balance Tank 4
     
 end
