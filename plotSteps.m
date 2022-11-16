@@ -9,8 +9,9 @@ function plotSteps(cell_data, plot_type, steps)
 
     for i=1:n_plots
         figure
-        title_fig = strcat(cell_data{i,3}," steps");
-        sgtitle(title_fig);
+        t = tiledlayout(2,2)
+
+        title_fig = strcat(cell_data{i,3}," Steps");
 
         for j = 1:size(cell_data{i,2},3)
             X1 = []; X2 = []; X3 = []; X4 = []; T = [];
@@ -49,40 +50,40 @@ function plotSteps(cell_data, plot_type, steps)
             end
     
             % Tank 3
-            subplot(2,2,1)
+            nexttile(1)
             plot(T, X3)
+            title("Tank 3")
             xlabel("Time (min)")
             ylabel(y_label)
-            title("Tank 3")
             ylim([0 max(X3)])
             xlim([0 x_lim])
             grid on
             hold on
             
             % Tank 4
-            subplot(2,2,2)
+            nexttile(2)
             plot(T, X4)
+            title("Tank 4")
             xlabel("Time (min)")
             ylabel(y_label)
-            title("Tank 4")
             ylim([0 max(X4)])
             xlim([0 x_lim])
             grid on
             hold on
             
             % Tank 1 
-            subplot(2,2,3)
+            nexttile(3)
             plot(T, X1)
+            title("Tank 1")
             xlabel("Time (min)")
             ylabel(y_label)
-            title("Tank 1")
             ylim([0 max(X1)])
             xlim([0 x_lim])
             grid on
             hold on        
             
             % Tank 2
-            subplot(2,2,4)
+            nexttile(4)
             plot(T, X2)
             xlabel("Time (min)")
             ylabel(y_label)
@@ -94,15 +95,9 @@ function plotSteps(cell_data, plot_type, steps)
             hold on
         end  
         
-        % Legends
-        subplot(2,2,1)
-        legend(leg)
-        subplot(2,2,2)
-        legend(leg)
-        subplot(2,2,3)
-        legend(leg)
-        subplot(2,2,4)
-        legend(leg)
+        hl = legend(leg);
+        hl.Layout.Tile = 'south';
+        title(t,title_fig);
     end
 
 

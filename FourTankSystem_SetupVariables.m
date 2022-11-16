@@ -24,8 +24,8 @@ ss_threshold = 0.05;
 % Flow rates pumps
 F1 = 300;           % [cm3/s] Flow rate from pump 1
 F2 = 300;           % [cm3/s] Flow rate from pump 2
-F3 = 300;             % [cm3/s] Flow rate from pump 3
-F4 = 300;             % [cm3/s] Flow rate from pump 4
+F3 = 250;             % [cm3/s] Flow rate from pump 3
+F4 = 250;             % [cm3/s] Flow rate from pump 4
 u = [F1; F2];
 d = [F3; F4];
 
@@ -66,8 +66,8 @@ A2 = 380.1327; %[cm2] Cross sectional area of tank 2
 A3 = 380.1327; %[cm2] Cross sectional area of tank 3
 A4 = 380.1327; %[cm2] Cross sectional area of tank 4
 At = [A1; A2; A3; A4];
-gamma1 = 0.45; % Flow distribution constant. Valve 1
-gamma2 = 0.4; % Flow distribution constant. Valve 2
+gamma1 = 0.58; % Flow distribution constant. Valve 1
+gamma2 = 0.68; % Flow distribution constant. Valve 2
 gamm = [gamma1; gamma2];
 g = 981; %[cm/s2] The acceleration of gravity
 rho = 1.00; %[g/cm3] Density of water

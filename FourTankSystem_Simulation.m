@@ -8,6 +8,7 @@ FourTankSystem_SetupVariables;
 % -Data will be called to variables from measurements
 % -If steps wanted to be saved, step will be used in the variable name
 mass_discrete_steps = {};
+mass_discrete = {};
 
 %% ------------------------------------------------------------------------
 % Steady State calculation
@@ -64,7 +65,8 @@ y = FourTankSystemSensor(X,p);
 % Discret-Time Simulation
 %-------------------------------------------------------------------------
 
-% Simulate stochastic system without error -> v = 0 and w = 0
+% Simulate stochastic system without error -> v = 0 and w = 0 and without
+% steps
 [X_discret, T_discret, y_discret, z_discret] = ...
     stochasticSimulation(Tf, deltaT, u, p, d, 0, 0, 0, steps, step_bin);
 
@@ -76,8 +78,8 @@ height_discret = FourTankSystemSensor(X_discret,p); % Get tank height from mass 
 qout_discret = height2flow(height_discret,p);       % Get out flow from height output
 
 % Save data to plot it
-mass_discrete_steps = data2Plot(T_discret_steps,X_discret_steps,"Discrete",mass_discrete_steps);
-
+mass_discrete_steps = data2Plot(T_discret_steps,X_discret_steps,"Deterministic model - ",mass_discrete_steps);
+mass_discrete = data2Plot(T_discret,X_discret, "Deterministic model",mass_discrete);
 
 %% ------------------------------------------------------------------------
 % Stochastic simulation
@@ -91,6 +93,7 @@ height_stoch = FourTankSystemSensor(X_stoch,p); % Get tank height from mass outp
 qout_stoch = height2flow(height_stoch,p);       % Get out flow from height output
 
 % Save data to plot it
+mass_discrete = data2Plot(T_stoch,X_stoch, "Stochastic model",mass_discrete);
 
 
 %% ------------------------------------------------------------------------
@@ -98,3 +101,4 @@ qout_stoch = height2flow(height_stoch,p);       % Get out flow from height outpu
 % -------------------------------------------------------------------------
 
 plotSteps(mass_discrete_steps, "mass", steps);
+plotData(mass_discrete, "mass","Deterministic simulation")

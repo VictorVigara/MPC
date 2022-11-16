@@ -3,6 +3,7 @@ function plotData(cell_data, plot_type, title_fig)
     n_plots = size(cell_data,1);
     leg = cell(n_plots,1);
     figure
+    t = tiledlayout(2,2);
 
     for i=1:n_plots
         leg{i,1} = cell_data{i,3};
@@ -39,7 +40,7 @@ function plotData(cell_data, plot_type, title_fig)
         end
 
         % Tank 3
-        subplot(2,2,1)
+        nexttile(1)
         plot(T, X3)
         xlabel("Time (min)")
         ylabel(y_label)
@@ -49,7 +50,7 @@ function plotData(cell_data, plot_type, title_fig)
         hold on
         
         % Tank 4
-        subplot(2,2,2)
+        nexttile(2)
         plot(T, X4)
         xlabel("Time (min)")
         ylabel(y_label)
@@ -59,7 +60,7 @@ function plotData(cell_data, plot_type, title_fig)
         hold on
         
         % Tank 1 
-        subplot(2,2,3)
+        nexttile(3)
         plot(T, X1)
         xlabel("Time (min)")
         ylabel(y_label)
@@ -69,7 +70,7 @@ function plotData(cell_data, plot_type, title_fig)
         hold on        
         
         % Tank 2
-        subplot(2,2,4)
+        nexttile(4)
         plot(T, X2)
         xlabel("Time (min)")
         ylabel(y_label)
@@ -82,14 +83,7 @@ function plotData(cell_data, plot_type, title_fig)
     end
 
     % Legends
-    subplot(2,2,1)
-    legend(leg)
-    subplot(2,2,2)
-    legend(leg)
-    subplot(2,2,3)
-    legend(leg)
-    subplot(2,2,4)
-    legend(leg)
-
-    sgtitle(title_fig)
+    hl = legend(leg);
+    hl.Layout.Tile = 'south';
+    title(t,title_fig);
 end
