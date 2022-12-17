@@ -6,10 +6,11 @@ clc; clear all;
 % Simulation time
 t0 = 0.0;           % [s] Initial time
 Tf = 20*60;         % [s] Final time
-deltaT = 10;        % [s] Sample time 
+deltaT = 1;        % [s] Sample time 
 t = [t0:deltaT:Tf]; % [s] sample instants
 N = length(t);
-Ts = 10;                     % Sample time for discretize the system 
+Ts = deltaT;                     % Sample time for discretize the system 
+tfinsteps = round(3*N);
 
 % Initial mass
 m10 = 0.0;          % [g] Liquid mass in tank 1 at time t0
@@ -32,8 +33,10 @@ d = [F3; F4];
 % Pumps flow rate for steady state calculation 
 F1_ss = 300;
 F2_ss = 300;
-F3_ss = 0;
-F4_ss = 0;
+F3_ss = 250;
+F4_ss = 250;
+u_ss = [F1_ss; F2_ss];
+d_ss = [F3_ss; F4_ss];
 
 % Set-up steps in each pump flow rate
 want_step = 1;              % Select if step us wanted
@@ -47,11 +50,11 @@ end
 % Process Noise
 Q = [20^2 0;0 40^2];
 Lq = chol(Q,'lower');
-w = Lq*randn(2,2*N);
+w = Lq*randn(2,tfinsteps);
 % Measurement Noise
 R = eye(4);
 Lr = chol(R,'lower');
-v = Lr*randn(4,2*N);
+v = Lr*randn(4,tfinsteps);
 
 %% ------------------------------------------------------------------------
 % Parameters

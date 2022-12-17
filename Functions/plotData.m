@@ -42,9 +42,9 @@ function plotData(cell_data, plot_type, title_fig)
         % Tank 3
         nexttile(1)
         plot(T, X3)
-        xlabel("Time (min)")
-        ylabel(y_label)
-        title("Tank 3")
+        xlabel("Time (min)", 'Interpreter','latex')
+        ylabel(y_label, 'Interpreter','latex')
+        title("Tank 3", 'Interpreter','latex')
         ylim([0 max_m])
         grid on
         hold on
@@ -52,9 +52,9 @@ function plotData(cell_data, plot_type, title_fig)
         % Tank 4
         nexttile(2)
         plot(T, X4)
-        xlabel("Time (min)")
-        ylabel(y_label)
-        title("Tank 4")
+        xlabel("Time (min)", 'Interpreter','latex')
+        ylabel(y_label, 'Interpreter','latex')
+        title("Tank 4", 'Interpreter','latex')
         ylim([0 max_m])
         grid on
         hold on
@@ -62,9 +62,9 @@ function plotData(cell_data, plot_type, title_fig)
         % Tank 1 
         nexttile(3)
         plot(T, X1)
-        xlabel("Time (min)")
-        ylabel(y_label)
-        title("Tank 1")
+        xlabel("Time (min)", 'Interpreter','latex')
+        ylabel(y_label, 'Interpreter','latex')
+        title("Tank 1", 'Interpreter','latex')
         ylim([0 max_m])
         grid on
         hold on        
@@ -72,9 +72,9 @@ function plotData(cell_data, plot_type, title_fig)
         % Tank 2
         nexttile(4)
         plot(T, X2)
-        xlabel("Time (min)")
-        ylabel(y_label)
-        title("Tank 2")
+        xlabel("Time (min)", 'Interpreter','latex')
+        ylabel(y_label, 'Interpreter','latex')
+        title("Tank 2", 'Interpreter','latex')
         ylim([0 max_m])
         grid on
     
@@ -83,7 +83,7 @@ function plotData(cell_data, plot_type, title_fig)
     end
 
     % Legends
-    hl = legend(leg);
+    hl = legend(leg, 'Interpreter','latex');
     hl.Layout.Tile = 'south';
-    title(t,title_fig);
+    title(t,title_fig, 'Interpreter','latex');
 end

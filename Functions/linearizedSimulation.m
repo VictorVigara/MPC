@@ -1,11 +1,14 @@
-function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
-                                                 want_step, steps, step_bin)    
+function [X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf, deltaT, u,...
+                                             p, d, v, w, want_step, steps, step_bin, tfinsteps)
     % Solve the system of differential equations
     iter_sim = round(tf/deltaT);
     Xk = zeros(1,4);
     Tk = 0;
     yk = zeros(1,4);
-    zk = zeros(1,4);
+    zk = zeros(1,2);
+
+    u_rel = u-u_ss;
+    d_rel = d-d_ss;
 
     % If discrete simulation is wanted, adecuate v and w inputs
     if v == 0
@@ -26,13 +29,14 @@ function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
         %Define simulation Tk
         t_ini = (i-1)*deltaT;
         t_fin = i*deltaT;
-    
-        %Store Tk-stamps
-        [~,xk] = ode15s(@FourTankSystem,[t_ini t_fin],Xk(i,:)',[],u + w(:,i),p,d);
-        Xk(i+1,:) = xk(end,:);
+
+        % Linear discretized simulation 
+        Xk(i+1,:) = (Ad*Xk(end,:)')' + (Bd*u_rel)' + (Ed*d_rel)';
+        yk(i+1,:) = (Cd*Xk(end,:)')';   
+        zk(i+1,:) = (Czd*Xk(end,:)')';
+
+        % Save simulations results
         Tk(i+1,:) = t_ini + deltaT;
-        yk(i+1,:) = FourTankSystemSensor(Xk(i+1,:),p) + v(:,i)';    % Get height from sensor
-        zk(i+1,:) = FourTankSystemSensor(Xk(i+1,:),p);              % Get height from mass
     end
 
     if want_step == 0
@@ -86,16 +90,20 @@ function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
 %             u_step = [steps(i)*step_bin(1)*u(1) steps(i)*step_bin(2)*u(2)];
 %             d_step = [steps(i)*step_bin(3)*d(1); steps(i)*step_bin(4)*d(2)];
             
-            for j=iter_sim:2*iter_sim
+            u_step_rel = u_step'-u;
+            d_step_rel = d_step-d;
+            for j=iter_sim:tfinsteps
                 %Define simulation time
                 t_ini = (j)*deltaT;
                 t_fin = (j+1)*deltaT;
-                %Store time-stamps
-                [T2,X2] = ode15s(@FourTankSystem,[t_ini t_fin],X(j,:,i)',[],u_step + w(:,j),p,d_step);
-                X(j+2,:,i) = X2(end,:);
+
+                % Linear discretized simulation 
+                X(j+2,:,i) = (Ad*X(j+1,:,i)' + Bd*u_step_rel + Ed*d_step_rel)';
+                y(j+2,:,i) = (Cd*X(j+2,:,i)')';  
+                z(j+2,:,i) = (Czd*X(j+2,:,i)')';   
+
                 T(j+2,:,i) = t_ini + deltaT;
-                y(j+2,:,i) = FourTankSystemSensor(X(j+1,:,i),p) + v(:,j)';  % Get height from mass
-                z(j+2,:,i) = FourTankSystemSensor(X(j+1,:,i),p);            % Get height from mass
+
             end
         end
     end

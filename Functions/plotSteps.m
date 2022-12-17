@@ -48,56 +48,67 @@ function plotSteps(cell_data, plot_type, steps)
                 x_lim = max(T);
                 y_label = "q (cm3/s)";
             end
+
+            if plot_type == "height"
+                max_m = max(max(cell_data{i,2}(:,:)));  % Max mass to ylim
+                X1 = cell_data{i,2}(:,1,j); % Mass tank 3 in Kg
+                X2 = cell_data{i,2}(:,2,j); % Mass tank 3 in Kg
+                X3 = cell_data{i,2}(:,3,j); % Mass tank 3 in Kg
+                X4 = cell_data{i,2}(:,4,j); % Mass tank 3 in Kg
+                T = cell_data{i,1}(:,:,j)/60;        % Time in min
+                x_lim = max(T);
+                y_label = " ";
+            end
     
             % Tank 3
             nexttile(1)
             plot(T, X3)
-            title("Tank 3")
-            xlabel("Time (min)")
-            ylabel(y_label)
+            title("Tank 3", 'Interpreter','latex')
+            xlabel("Time (min)", 'Interpreter','latex')
+            ylabel(y_label, 'Interpreter','latex')
             ylim([0 max(X3)])
-            xlim([0 x_lim])
+            xlim([T(1) x_lim])
             grid on
             hold on
             
             % Tank 4
             nexttile(2)
             plot(T, X4)
-            title("Tank 4")
-            xlabel("Time (min)")
-            ylabel(y_label)
+            title("Tank 4", 'Interpreter','latex')
+            xlabel("Time (min)", 'Interpreter','latex')
+            ylabel(y_label, 'Interpreter','latex')
             ylim([0 max(X4)])
-            xlim([0 x_lim])
+            xlim([T(1) x_lim])
             grid on
             hold on
             
             % Tank 1 
             nexttile(3)
             plot(T, X1)
-            title("Tank 1")
-            xlabel("Time (min)")
-            ylabel(y_label)
+            title("Tank 1", 'Interpreter','latex')
+            xlabel("Time (min)", 'Interpreter','latex')
+            ylabel(y_label, 'Interpreter','latex')
             ylim([0 max(X1)])
-            xlim([0 x_lim])
+            xlim([T(1) x_lim])
             grid on
             hold on        
             
             % Tank 2
             nexttile(4)
             plot(T, X2)
-            xlabel("Time (min)")
-            ylabel(y_label)
-            title("Tank 2")
+            xlabel("Time (min)", 'Interpreter','latex')
+            ylabel(y_label, 'Interpreter','latex')
+            title("Tank 2", 'Interpreter','latex')
             ylim([0 max(X2)])
-            xlim([0 x_lim])
+            xlim([T(1) x_lim])
             grid on
         
             hold on
         end  
         
-        hl = legend(leg);
+        hl = legend(leg, 'Interpreter','latex');
         hl.Layout.Tile = 'south';
-        title(t,title_fig);
+        title(t,title_fig, 'Interpreter','latex');
     end
 
 
