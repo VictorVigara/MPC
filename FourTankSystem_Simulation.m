@@ -100,7 +100,8 @@ y_discrete_steps_normalized_F1_plot = data2Plot(T_discrete_steps_init,y_discrete
 y_discrete_steps_normalized_F2_plot = data2Plot(T_discrete_steps_init,y_discrete_steps_normalized_F2, ...
                                 "Norm Steps wrt F2 - Deterministic model - ",y_discrete_steps_normalized_F2_plot);
 
-
+% Get tf from normalised step
+[y_ss_F1, time_constant_F1]  = getTF(y_discrete_steps_normalized_F1,steps,T_discrete_steps_init);
 
 %% ------------------------------------------------------------------------
 % Stochastic simulation
@@ -133,6 +134,8 @@ y_stoch_steps_normalized_F1_plot = data2Plot(T_stoch_steps_init,y_stochastic_ste
 
 y_stoch_steps_normalized_F2_plot = data2Plot(T_stoch_steps_init,y_stochastic_steps_normalized_F2, ...
                                 "Norm Steps wrt F2 - Stochastic model - ",y_stoch_steps_normalized_F2_plot);
+
+
 
 %% ------------------------------------------------------------------------
 % Linearized simulation
