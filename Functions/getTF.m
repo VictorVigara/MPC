@@ -18,7 +18,7 @@ for i=1:size(norm_step,2)
         % Get time constant in seconds by interpolating previous value  
         time_constant(j,i) = interp1(y_step, time_step, y_time_constant) - time_step(1);
         fprintf("Transfer function from F1 to Y%d - Step = %f", i, steps(j))
-        G = tf(y_ss(j,i), [time_constant(j,1) 1])
+        G = tf(y_ss(j,i), [time_constant(j,i) 1])
     end
 end
 

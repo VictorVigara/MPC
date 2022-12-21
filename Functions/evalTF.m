@@ -7,7 +7,7 @@ order_plots = [3; 4; 1; 2];
 for i=1:size(y_ss,2)
     for j=1:length(steps)
         y_ss_ij = y_ss(j,i); 
-        tc_ij = time_constant(j,1); 
+        tc_ij = time_constant(j,i); 
 
         G_ij = tf([y_ss_ij],[tc_ij 1]); 
         [y_step, t_step] = step(G_ij, size(T_discrete_steps_init,1)); 

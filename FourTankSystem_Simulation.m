@@ -103,6 +103,9 @@ y_discrete_steps_normalized_F2_plot = data2Plot(T_discrete_steps_init,y_discrete
 % Get tf from normalised step
 [y_ss_F1, time_constant_F1]  = getTF(y_discrete_steps_normalized_F1,steps,T_discrete_steps_init);
 evalTF(y_ss_F1, time_constant_F1, steps, y_discrete_steps_normalized_F1, T_discrete_steps_init, "F1");
+
+[y_ss_F2, time_constant_F2] = getTF(y_discrete_steps_normalized_F2, steps, T_discrete_steps_init); 
+evalTF(y_ss_F2, time_constant_F2, steps, y_discrete_steps_normalized_F2, T_discrete_steps_init, "F2");
 %% ------------------------------------------------------------------------
 % Stochastic simulation
 % -------------------------------------------------------------------------
