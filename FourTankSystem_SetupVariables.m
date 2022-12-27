@@ -55,6 +55,8 @@ w = Lq*randn(2,tfinsteps);
 R = eye(4);
 Lr = chol(R,'lower');
 v = Lr*randn(4,tfinsteps);
+% Correlation between the process and measurement noise:
+S_wv = zeros(size(Q, 1), size(R, 1)); 
 
 %% ------------------------------------------------------------------------
 % Parameters

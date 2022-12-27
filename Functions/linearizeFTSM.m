@@ -1,4 +1,4 @@
-function [A, B, C, Cz, D, E] = linearizeFTSM(g, ap, rho, At, X_ss, gamma1, gamma2)
+function [A, B, C, Cz, D, E, G] = linearizeFTSM(g, ap, rho, At, X_ss, gamma1, gamma2)
 
 T = sqrt((g*ap.^2*rho)./(2*At.*X_ss')); % Derivative of mdot wrt m
 
@@ -22,5 +22,10 @@ E = [0     0;
      0     0; 
      rho   0;
      0      rho];
+
+G = [rho    0; 
+     0      rho; 
+     0      rho; 
+     rho    0]; 
 
 end

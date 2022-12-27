@@ -34,7 +34,7 @@ mass_linearized_steps = {};
 %% ------------------------------------------------------------------------
 % Linearization 
 % -------------------------------------------------------------------------
-[A, B, C, Cz, D, E] = linearizeFTSM(g, ap, rho, At, X_ss, gamma1, gamma2);
+[A, B, C, Cz, D, E, G] = linearizeFTSM(g, ap, rho, At, X_ss, gamma1, gamma2);
 
 %% ------------------------------------------------------------------------
 % Discretization of a linear model
@@ -43,6 +43,8 @@ mass_linearized_steps = {};
 [Ad, Ed] = c2dzoh(A, E, Ts);
 Cd = C;
 Czd = Cz;
+Gd = G;
+Dd = D;
 %% ------------------------------------------------------------------------
 % Transfer function of the linear model
 % -------------------------------------------------------------------------
@@ -70,11 +72,11 @@ y = FourTankSystemSensor(X,p);
 
 % Simulate stochastic system WITHOUT ERROR -> v = 0 and w = 0 and 
 % WITHOUT STEPS
-[X_discrete, T_discrete, y_discrete, z_discrete] = ...
+[X_discrete, T_discrete, y_discrete, z_discrete, u_discrete, d_discrete] = ...
     stochasticSimulation(Tf, deltaT, u, p, d, 0, 0, 0, steps, step_bin, tfinsteps);
 
 % Simulate stochastic system WITHOUT ERROR WITH STEPS -> v = 0 and w = 0
-[X_discrete_steps, T_discrete_steps, y_discrete_steps, z_discrete_steps] = ...
+[X_discrete_steps, T_discrete_steps, y_discrete_steps, z_discrete_steps, u_discrete_steps, d_discrete_steps] = ...
     stochasticSimulation(Tf, deltaT, u, p, d, 0, 0, 1, steps, step_bin, tfinsteps);
 
 T_discrete_steps_init = T_discrete_steps(iter_sim:end,:,:); % Get time from which steps start
@@ -106,15 +108,16 @@ evalTF(y_ss_F1, time_constant_F1, steps, y_discrete_steps_normalized_F1, T_discr
 
 [y_ss_F2, time_constant_F2] = getTF(y_discrete_steps_normalized_F2, steps, T_discrete_steps_init); 
 evalTF(y_ss_F2, time_constant_F2, steps, y_discrete_steps_normalized_F2, T_discrete_steps_init, "F2");
+
 %% ------------------------------------------------------------------------
 % Stochastic simulation
 % -------------------------------------------------------------------------
 
 % Simulate the system
-[X_stoch, T_stoch, y_stoch, z_stoch] = ...
+[X_stoch, T_stoch, y_stoch, z_stoch, u_stoch, d_stoch] = ...
 stochasticSimulation(Tf, deltaT, u, p, d, v, w, 0, steps, step_bin, tfinsteps);
 
-[X_stoch_steps, T_stoch_steps, y_stoch_steps, z_stoch_steps] = ...
+[X_stoch_steps, T_stoch_steps, y_stoch_steps, z_stoch_steps, u_stoch_steps, d_stoch_steps] = ...
 stochasticSimulation(Tf, deltaT, u, p, d, v, w,1, steps, step_bin, tfinsteps);
 
 T_stoch_steps_init = T_stoch_steps(iter_sim:end,:,:);
@@ -145,10 +148,32 @@ y_stoch_steps_normalized_F2_plot = data2Plot(T_stoch_steps_init,y_stochastic_ste
 % -------------------------------------------------------------------------
 X0 = [0;0;0;0];
 
-[X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, Tf, deltaT, u,...
+[X, T, y, z, u_lin, d_lin] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, Tf, deltaT, u,...
                                     p, d, v, w, want_step, steps, step_bin, tfinsteps);
 X_lin = X+X_ss;
 mass_linearized_steps = data2Plot(T, X_lin, 'X(t) - Linearized model', mass_linearized_steps);
+
+%% ------------------------------------------------------------------------
+%  Static Kalman Filter
+% -------------------------------------------------------------------------
+x0 = X_ss - X_ss;
+[x_hat_stat, y_hat_stat, z_hat_stat, x_stat, y_stat, z_stat, time_stat] = statKalmanFilter(Ad, Bd, Cd, Dd, Czd, ...
+    Ed, Gd, u_lin, d_lin, Q, R, S_wv, w, v, x0, tfinsteps, deltaT, steps);
+
+x_hat_stat_plot = {}; 
+x_hat_stat_plot = data2Plot(time_stat, x_hat_stat+X_ss, 'X(t) - Kalman filter', x_hat_stat_plot);
+
+
+%% ------------------------------------------------------------------------
+%   Dynamic Kalman Filter
+% -------------------------------------------------------------------------
+x0 = X_ss - X_ss;
+[x_hat_din, y_hat_din, z_hat_din, P_din, R_z_din, x_din, y_din, z_din, time_din] = dynamicKalmanFilter(Ad, Bd, Cd, Dd, Czd, ...
+    Ed, Gd, u_lin, d_lin, Q, R, S_wv, w, v, x0, tfinsteps, deltaT, steps);
+
+x_hat_din_plot = {}; 
+x_hat_din_plot = data2Plot(time_din, x_hat_din+X_ss, 'X(t) - Kalman filter', x_hat_din_plot);
+
 %% ------------------------------------------------------------------------
 % Plots
 % -------------------------------------------------------------------------
@@ -162,4 +187,6 @@ plotSteps(y_discrete_steps_normalized_F1_plot, "height", steps);
 plotSteps(y_discrete_steps_normalized_F2_plot, "height", steps);
 plotSteps(y_stoch_steps_normalized_F1_plot, "height", steps); 
 plotSteps(y_stoch_steps_normalized_F2_plot, "height", steps); 
+plotSteps(x_hat_stat_plot, "mass", steps);
+plotSteps(x_hat_din_plot, "mass", steps);
 

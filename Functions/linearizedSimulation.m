@@ -1,4 +1,4 @@
-function [X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf, deltaT, u,...
+function [X, T, y, z, u_rel, d_rel] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf, deltaT, u,...
                                              p, d, v, w, want_step, steps, step_bin, tfinsteps)
     % Solve the system of differential equations
     iter_sim = round(tf/deltaT);
@@ -7,8 +7,11 @@ function [X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf
     yk = zeros(1,4);
     zk = zeros(1,2);
 
-    u_rel = u-u_ss;
-    d_rel = d-d_ss;
+    u_relative = u-u_ss;
+    d_relative = d-d_ss;
+
+    u_rel(1,:) = u_relative'; 
+    d_rel(1,:) = d_relative';
 
     % If discrete simulation is wanted, adecuate v and w inputs
     if v == 0
@@ -30,8 +33,12 @@ function [X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf
         t_ini = (i-1)*deltaT;
         t_fin = i*deltaT;
 
+        % Define input 
+        u_rel(i+1,:) = u_relative'; 
+        d_rel(i+1,:) = d_relative';
+
         % Linear discretized simulation 
-        Xk(i+1,:) = (Ad*Xk(end,:)')' + (Bd*u_rel)' + (Ed*d_rel)';
+        Xk(i+1,:) = (Ad*Xk(end,:)')' + (Bd*u_relative)' + (Ed*d_relative)';
         yk(i+1,:) = (Cd*Xk(end,:)')';   
         zk(i+1,:) = (Czd*Xk(end,:)')';
 
@@ -59,7 +66,11 @@ function [X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf
             T(:,:,i) = Tk(:,:,1);
             y(:,:,i) = yk(:,:,1);
             z(:,:,i) = zk(:,:,1);
+            % Save u and d used for simulation
+            u_rel(:,:,i) = u_rel(:,:,1);
+            d_rel(:,:,i) = d_rel(:,:,1);
         end
+        
 
         for i=1:length(steps)
             % If steps are applied multiply u and d
@@ -103,7 +114,8 @@ function [X, T, y, z] = linearizedSimulation(Ad, Bd, Cd, Czd, Ed, u_ss, d_ss, tf
                 z(j+2,:,i) = (Czd*X(j+2,:,i)')';   
 
                 T(j+2,:,i) = t_ini + deltaT;
-
+                u_rel(j+2,:,i) = u_step_rel';
+                d_rel(j+2,:,i) = d_step_rel';
             end
         end
     end

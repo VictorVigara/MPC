@@ -1,11 +1,13 @@
-function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
+function [X, T, y, z, u_stoch, d_stoch] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
                                                  want_step, steps, step_bin, tfinsteps)    
-    % Solve the system of differential equations
+    % ---- Solve the system of differential equations ----
     iter_sim = round(tf/deltaT);
     Xk = zeros(1,4);
     Tk = 0;
     yk = zeros(1,4);
     zk = zeros(1,4);
+    u_stoch(1,:) = u'; 
+    d_stoch(1,:) = d'; 
 
     % If discrete simulation is wanted, adecuate v and w inputs
     if v == 0
@@ -26,13 +28,18 @@ function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
         %Define simulation Tk
         t_ini = (i-1)*deltaT;
         t_fin = i*deltaT;
+
+        % Define input with noise
+        u_stoch(i+1,:) = (u + w(:,i))'; 
+        d_stoch(i+1,:) = d'; 
     
         %Store Tk-stamps
-        [~,xk] = ode15s(@FourTankSystem,[t_ini t_fin],Xk(i,:)',[],u + w(:,i),p,d);
+        [~,xk] = ode15s(@FourTankSystem,[t_ini t_fin],Xk(i,:)',[],u_stoch(i+1,:)',p,d_stoch(i+1,:)');
         Xk(i+1,:) = xk(end,:);
         Tk(i+1,:) = t_ini + deltaT;
         yk(i+1,:) = FourTankSystemSensor(Xk(i+1,:),p) + v(:,i)';    % Get height from sensor
         zk(i+1,:) = FourTankSystemSensor(Xk(i+1,:),p);              % Get height from mass
+        
     end
 
     if want_step == 0
@@ -55,7 +62,10 @@ function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
             T(:,:,i) = Tk(:,:,1);
             y(:,:,i) = yk(:,:,1);
             z(:,:,i) = zk(:,:,1);
+            u_stoch(:,:,i) = u_stoch(:,:,1); 
+            d_stoch(:,:,i) = d_stoch(:,:,1); 
         end
+
 
         for i=1:length(steps)
             % If steps are applied multiply u and d
@@ -91,8 +101,11 @@ function [X, T, y, z] = stochasticSimulation(tf, deltaT, u, p, d, v, w, ...
                 t_ini = (j)*deltaT;
                 t_fin = (j+1)*deltaT;
                 %Store time-stamps
+
+                u_stoch(j+2,:,i) = (u_step + w(:,j)'); 
+                d_stoch(j+2,:,i) = d_step';
                 try
-                    [T2,X2] = ode15s(@FourTankSystem,[t_ini t_fin],X(j,:,i)',[],u_step + w(:,j),p,d_step);
+                    [T2,X2] = ode15s(@FourTankSystem,[t_ini t_fin],X(j,:,i)',[],u_stoch(j+2,:,i)',p,d_stoch(j+2,:,i)');
                 catch
                     fprintf("Error")
                 end
