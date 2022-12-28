@@ -38,17 +38,21 @@ F4_ss = 250;
 u_ss = [F1_ss; F2_ss];
 d_ss = [F3_ss; F4_ss];
 
+% Number of future input moves to compute / Prediction horizon /  Number of
+% time steps [s]:
+N = 10;
+
 % Set-up steps in each pump flow rate
 want_step = 1;              % Select if step us wanted
 step_bin = [1; 1; 0; 0];    % Binary selection for steps for every F
-steps = [1.1; 1.25; 1.5];   % Step values for each F
+steps = [1.2];   % Step values for each F
 if want_step == 0
     steps = 0;
 end
 
 %Stochastic simulation
 % Process Noise
-Q = [20^2 0;0 40^2];
+Q = [20^2 0;0 20^2];
 Lq = chol(Q,'lower');
 w = Lq*randn(2,tfinsteps);
 % Measurement Noise

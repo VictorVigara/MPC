@@ -227,7 +227,7 @@ u_0 = u-u_ss;
 
 
 x_mpc = {}; 
-x_mpc = data2Plot(time_din, x_uncMPClin, 'X(t) - MPC', x_mpc);
+x_mpc = data2Plot(time_din, x_uncMPClin, 'X(t) - Kalman filter', x_mpc);
 plotSteps(x_mpc, "mass", steps);
 
 %% ------------------------------------------------------------------------
